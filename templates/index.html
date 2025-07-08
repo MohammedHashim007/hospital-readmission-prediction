@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hospital Readmission Predictor</title>
+  <!-- Link CSS -->
+  <!--<link rel="stylesheet" href="{{ url_for('static', filename='static/css/styles.css') }}">-->
+  <style>
+    :root {
+      --hero-bg: #d5e5fd;
+      --section-bg: #f1f0fb;
+      --card-bg: #ffffff;
+      --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      --card-hover-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      --btn-bg: #5bb4ff;
+      --btn-hover-bg: #40a4e6;
+      --text-dark: #111827;
+      --text-medium: #374151;
+      --text-light: #6b7280;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      color: var(--text-dark);
+      background-color: rgb(234, 234, 224) !important;
+    }
+
+    /* HERO */
+    .hero-section {
+      height: 80vh;
+      background: linear-gradient(to bottom, #bddefe, #f4f6ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .hero-section h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-section p {
+      font-size: 1.25rem;
+      color: var(--text-medium);
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 0.75rem 2rem;
+      background: var(--btn-bg);
+      color: #fff;
+      font-size: 1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: var(--btn-hover-bg);
+    }
+
+    /* SECTIONS */
+    .section-bg {
+      background-color: #e0f0fe;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 1rem;
+    }
+
+    /* ABOUT */
+    .about-section h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-section p {
+      font-size: 1rem;
+      color: var(--text-medium);
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+
+    /* PREDICTION TOOL */
+    .prediction-section {
+      background: #ffffff;
+    }
+
+    .prediction-section h2 {
+      font-size: 2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .predict-form {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      padding: 2rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-grid label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-grid input,
+    .form-grid select {
+      width: 100%;
+      height: 3rem;
+      padding: 0 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      color: var(--text-medium);
+      transition: border-color 0.3s;
+    }
+
+    .form-grid input:focus,
+    .form-grid select:focus {
+      border-color: var(--btn-bg);
+      outline: none;
+    }
+
+    .btn-predict {
+      width: 100%;
+      height: 3.5rem;
+      background: var(--btn-bg);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.3s;
+      /*margin-left: 50px;*/
+      margin-top: 50px;
+    }
+
+    .btn-predict:hover {
+      background: var(--btn-hover-bg);
+    }
+
+    /* TEAM */
+    .team-section h2 {
+      font-size: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .icon-team {
+      font-size: 2rem;
+      color: var(--btn-bg);
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 2rem;
+      justify-items: center;
+      margin: 50px;
+    }
+
+    .student-card {
+      background: var(--card-bg);
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .student-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--card-hover-shadow);
+    }
+
+    .student-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.25rem;
+    }
+
+    .student-card p {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-light);
+    }
+
+    .project-info {
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    /* FOOTER */
+    .footer {
+      background: #f9fafb;
+      padding: 3rem 1rem;
+      text-align: center;
+      color: var(--text-light);
+    }
+
+    .footer p {
+      margin: 0 0 1rem;
+      line-height: 1.5;
+    }
+
+    .btn-github {
+      display: inline-block;
+      margin-bottom: 1rem;
+      color: var(--btn-bg);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .btn-github:hover {
+      color: var(--btn-hover-bg);
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.5rem;
+      color: #111827;
+      font-weight: bold;
+      text-align: center;
+    }
+
+/*
+
+    nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #333;
+  padding: 0px 0;
+
+}
+
+nav ul li {
+  margin: 0 20px;
+}
+
+nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+ul {
+  margin: 10px 0;
+}*/
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #222;
+  padding: 12px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  margin: 0;
+}
+
+nav ul li {
+  margin: 0 30px;
+  position: relative;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 8px 12px;
+  transition: color 0.3s ease;
+  
+}
+
+nav ul li a::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 0%;
+  background-color: #00bfff;
+  transition: width 0.3s ease;
+  margin-top: 4px;
+}
+
+nav ul li a:hover {
+  color: #00bfff;
+}
+
+nav ul li a:hover::after {
+  width: 100%;
+}
+
+ul {
+  margin: 10px 0;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <ul>
+    
+      <li><a href="#about">Home</a></li>
+      <li><a href="https://app.powerbi.com/reportEmbed?reportId=f2c6e5e6-ddc6-4f48-953b-effe02c71a26&autoAuth=true&ctid=1ea77eb9-a85b-4e25-9948-f1aecbfe3b6d">PowerBi</ahref></a></li>
+      <li><a href="{{ url_for('login') }}">Admin Login</a></li>  
+    </ul>
+  </nav>
+
+
+  <!-- HERO -->
+  <section id="hero" class="hero-section">
+    <div class="hero-content">
+      <h1>Predictive Analytics for Hospital Readmission Rates</h1>
+      <p>Reducing Healthcare Burden with Predictive Intelligence</p>
+      <a href="#prediction" class="btn-primary">Try the Predictor ↓</a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about-section section-bg">
+    <div class="container">
+      <h2>About the Project</h2>
+      <p>
+        Hospital readmissions are a significant challenge in healthcare,
+        leading to increased costs and reduced patient satisfaction. Our
+        project leverages machine learning to predict the likelihood of
+        diabetic patient readmissions, enabling proactive interventions
+        and resource optimization.
+      </p>
+      <p>
+        Using advanced machine learning algorithms including Random
+        Forests and XG Boost, LightGBM, we analyze patient data to
+        identify key factors contributing to readmission risk.
+      </p>
+      <p>
+        Built using open‑source tools with the goal of improving patient
+        outcomes and optimizing hospital resources.
+      </p>
+    </div>
+  </section>
+
+  <!-- PREDICTION TOOL -->
+  <section id="prediction" class="prediction-section">
+    <div class="container">
+      <h2>Try the Prediction Tool</h2>
+      <form id="predictForm" class="predict-form" action="/predict" method="post">
+        <div class="form-grid">
+
+          <!-- Gender -->
+          <div class="form-group"><label>Gender</label>
+            <select id="gender" name="gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+
+
+
+          <!-- Age -->
+          <div class="form-group"><label>Age</label><input type="text" name="age" required></div>
+         
+          <!-- Admission Type -->
+          <div class="form-group"><label>Admission Type ID</label>
+            <select id="admission_type_id" name="admission_type_id">
+              <option value="Emergency">Emergency</option>
+              <option value="Elective">Elective</option>
+              <option value="Not Available">Not Available</option>
+            </select>
+          </div>
+
+
+
+
+          <!-- Discharge Disposition -->
+          <div class="form-group"><label>Discharge Disposition ID</label>
+            <select id="discharge_disposition_id" name="discharge_disposition_id">
+              <option value="Discharged to home">Discharged to home</option>
+              <option value="Transferred to another facility">Transferred to another facility</option>
+              <option value="Not Available">Not Available</option>
+              <option value="Left AMA">Left AMA</option>
+              <option value="Still patient/referred to this institution">Still patient/referred to this institution
+              </option>
+            </select>
+          </div>
+
+
+
+          <!-- Admission Source -->
+
+          <div class="form-group"><label>Admission Source ID</label>
+            <select id="admission_source_id" name="admission_source_id">
+              <option value="Emergency">Emergency</option>
+              <option value="Referral">Referral</option>
+              <option value="Not Available">Not Available</option>
+              <option value="Transferred from hospital">Transferred from hospital</option>
+            </select>
+          </div>
+
+
+          <!-- Time in Hospital -->
+          <div class="form-group"><label>Time in Hospital</label><input type="number" name="time_in_hospital" required>
+          </div>
+
+          <!-- Num Lab Procedures -->
+          <div class="form-group"><label>Num Lab Procedures</label><input type="number" name="num_lab_procedures"
+              required></div>
+              
+          <!-- Num Procedures -->
+          <div class="form-group"><label>Num Procedures</label><input type="number" name="num_procedures" required>
+          </div>
+          <!-- Num Medications -->
+          <div class="form-group"><label>Num Medications</label><input type="number" name="num_medications" required>
+          </div>
+          <!-- Diagnoses -->
+          <div class="form-group"><label>Diagnosis 1</label><input type="text" name="diag_1" required></div>
+          <div class="form-group"><label>Diagnosis 2</label><input type="text" name="diag_2" required></div>
+          <div class="form-group"><label>Diagnosis 3</label><input type="text" name="diag_3" required></div>
+          <div class="form-group"><label>Number Diagnoses</label><input type="number" name="number_diagnoses" required>
+          </div>
+
+
+          <!-- Max Glucose Serum -->
+          <div class="form-group"><label>Max Glucose Serum</label>
+            <select id="max_glu_serum" name="max_glu_serum">
+              <option value="None">None</option>
+              <option value="Norm">Norm</option>
+              <option value=">200">>200</option>
+              <option value=">300">>300</option>
+            </select>
+          </div>
+
+
+          <!-- A1C Result -->
+          <div class="form-group"><label>A1C Result</label>
+            <select id="A1Cresult" name="A1Cresult">
+              <option value="None">None</option>
+              <option value="Norm">Norm</option>
+              <option value=">7">>7</option>
+              <option value=">8">>8</option>
+            </select>
+          </div>
+
+
+
+          <!-- Medications -->
+          <div class="form-group"><label>Metformin</label><input type="text" name="metformin" required></div>
+          <div class="form-group"><label>Glipizide</label><input type="text" name="glipizide" required></div>
+          <div class="form-group"><label>Glyburide</label><input type="text" name="glyburide" required></div>
+          <div class="form-group"><label>Insulin</label><input type="text" name="insulin" required></div>
+
+          <!-- Change -->
+          <div class="form-group"><label>Change</label><input type="text" name="change" required></div>
+
+
+          <!-- Diabetes Medication -->
+          <div class="form-group"><label>Diabetes Medication</label>
+            <select id="diabetesMed" name="diabetesMed">
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+
+
+
+          <!-- Service Utilization -->
+          <div class="form-group"><label>Service_Utilization</label><input type="text" name="service_utilization"
+              required></div>
+
+          <!-- Race -->
+          <div class="form-group"><label>Asian</label><input type="text" name="Asian" required></div>
+          <div class="form-group"><label>Caucasian</label><input type="text" name="Caucasian" required></div>
+          <div class="form-group"><label>Hispanic</label><input type="text" name="Hispanic" required></div>
+          <div class="form-group"><label>Other</label><input type="text" name="Other" required></div>
+
+        </div>
+        <button type="submit" class="btn-predict">
+          Predict Readmission Risk
+        </button>
+
+      </form>
+
+      {% if prediction %}
+      <div class="result">
+        Prediction Result: {{ prediction }}
+      </div>
+      {% endif %}
+
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team" class="team-section section-bg">
+    <div class="container">
+      <h2><span class="icon-team">👥</span> Our Team</h2>
+      <div class="team-grid">
+        <div class="student-card">
+          <h3> Mohammed Hashim </h3>
+          <p>812421104062</p>
+        </div>
+        <div class="student-card">
+          <h3> Nishar Ahamed </h3>
+          <p>812421104070</p>
+        </div>
+        <div class="student-card">
+          <h3>Ahamed Syed Hameed</h3>
+          <p>812421104006</p>
+        </div>
+        <div class="student-card">
+          <h3> Mohamed Arsath </h3>
+          <p>812421104053</p>
+        </div>
+      </div>
+      <p class="project-info">
+        Computer Science and Engineering<br />
+        Final Year Project – 2025
+      </p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>
+      This is a student project for academic purposes only.<br />
+      Not intended for real medical use.
+    </p>
+    <a href="https://github.com/your‑repo" target="_blank" class="btn-github">View on GitHub</a>
+    <p><!--&copy;--> 2025 Hospital Readmission Predictor. <!--All rights reserved.--></p>
+  </footer>
+
+  <!-- Link JS -->
+  <!--<script src="{{ url_for('static', filename='static/js/script.js') }}"></script>-->
+  <script>// smooth scroll to prediction
+    document
+      .querySelector('.btn-primary')
+      .addEventListener('click', (e) => {
+        e.preventDefault();
+        document
+          .querySelector('#prediction')
+          .scrollIntoView({ behavior: 'smooth' });
+      });
+
+    // form handling
+    //document
+    //.getElementById('predictForm')
+    //.addEventListener('submit', function (e) {
+    //e.preventDefault();
+    //const fields = [
+    //'age','gender','race','admissionType','dischargeDisposition',
+    //'admissionSource','timeInHospital','numLabProcedures',
+    //'numProcedures','numMedications','numOutpatient',
+    //'numEmergency','numInpatient','numDiagnoses',
+    //'maxGlucoseSerum','a1cResult','change','diabetesMed'
+    //];
+    //const data = {};
+    //fields.forEach((f) => {
+    //data[f] = document.getElementById(f).value;
+    //});
+    //console.log('Submitting prediction payload:', data);
+    // TODO: hook up to your backend prediction API
+    //alert('Prediction submitted!\nCheck console for payload.');
+    //});
+  </script>
+</body>
+
+</html>
