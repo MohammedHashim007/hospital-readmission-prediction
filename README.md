@@ -1,3 +1,4 @@
+
 # 🏥 Predictive Analytics for Hospital Readmission Rates
 
 This project predicts hospital readmission likelihood using machine learning models trained on patient records. It is aimed at improving healthcare outcomes and resource utilization.
@@ -54,3 +55,7 @@ Role: Data Analyst
 
 ## 📄 License
 This project is open-source under the MIT License.
+
+# hospital-readmission-prediction
+Machine Learning-based predictive analytics project for hospital readmission rates.
+
